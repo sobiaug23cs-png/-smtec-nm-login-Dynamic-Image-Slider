@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Image Slider</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(120deg, #1a1a1a, #444);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .gallery-container {
+      width: 90%;
+      max-width: 900px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 2em;
+      letter-spacing: 2px;
+      color: #ffdd57;
+    }
+
+    .slider-container {
+      position: relative;
+      overflow: hidden;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    }
+
+    .slider {
+      display: flex;
+      transition: transform 0.7s ease-in-out;
+      width: 100%;
+    }
+
+    .slider img {
+      width: 100%;
+      border-radius: 15px;
+    }
+
+    .nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      border: none;
+      color: #fff;
+      padding: 10px 15px;
+      font-size: 28px;
+      cursor: pointer;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .prev {
+      left: 15px;
+    }
+
+    .next {
+      right: 15px;
+    }
+
+    .caption {
+      background: rgba(0, 0, 0, 0.7);
+      font-size: 18px;
+      padding: 10px;
+      text-align: center;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      border-radius: 0 0 15px 15px;
+    }
+
+    .thumbnails {
+      display: flex;
+      justify-content: center;
+      margin-top: 15px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .thumbnails img {
+      width: 80px;
+      height: 50px;
+      border-radius: 8px;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: 0.3s;
+      object-fit: cover;
+    }
+
+    .thumbnails img.active,
+    .thumbnails img:hover {
+      opacity: 1;
+      transform: scale(1.05);
+      border: 2px solid #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="gallery-container">
+    <h1>Dynamic Image Slider Gallery</h1>
+
+    <div class="slider-container">
+      <div class="slider" id="slider"></div>
+
+      <!-- Navigation Buttons -->
+      <button class="nav-btn prev">❮</button>
+      <button class="nav-btn next">❯</button>
+
+      <!-- Caption -->
+      <div class="caption" id="caption">Loading...</div>
+    </div>
+
+    <!-- Thumbnails -->
+    <div class="thumbnails" id="thumbnails"></div>
+  </div>
+
+  <script>
+    // Array of dynamic images and captions
+    const images = [
+      {
+        url: "https://picsum.photos/id/1005/900/500",
+        caption: "Beautiful Lake View"
+      },
+      {
+        url: "https://picsum.photos/id/1018/900/500",
+        caption: "Sunset Over the Mountains"
+      },
+      {
+        url: "https://picsum.photos/id/1020/900/500",
+        caption: "Bridge in the Forest"
+      },
+      {
+        url: "https://picsum.photos/id/1025/900/500",
+        caption: "Lovely Golden Retriever"
+      },
+      {
+        url: "https://picsum.photos/id/1031/900/500",
+        caption: "Starry Night Sky"
+      }
+    ];
+
+    const slider = document.getElementById("slider");
+    const thumbnails = document.getElementById("thumbnails");
+    const caption = document.getElementById("caption");
+    let index = 0;
+
+    // Dynamically create slides and thumbnails
+    images.forEach((img, i) => {
+      const image = document.createElement("img");
+      image.src = img.url;
+      slider.appendChild(image);
+
+      const thumb = document.createElement("img");
+      thumb.src = img.url;
+      thumb.addEventListener("click", () => {
+        index = i;
+        updateSlider();
+        resetTimer();
+      });
+      thumbnails.appendChild(thumb);
+    });
+
+    function updateSlider() {
+      slider.style.transform = `translateX(${-index * 100}%)`;
+      caption.textContent = images[index].caption;
+
+      // Highlight active thumbnail
+      document.querySelectorAll(".thumbnails img").forEach((thumb, i) => {
+        thumb.classList.toggle("active", i === index);
+      });
+    }
+
+    // Navigation buttons
+    document.querySelector(".next").addEventListener("click", () => {
+      index = (index + 1) % images.length;
+      updateSlider();
+      resetTimer();
+    });
+
+    document.querySelector(".prev").addEventListener("click", () => {
+      index = (index - 1 + images.length) % images.length;
+      updateSlider();
+      resetTimer();
+    });
+
+    // Auto-slide every 4 seconds
+    let timer = setInterval(nextSlide, 4000);
+
+    function nextSlide() {
+      index = (index + 1) % images.length;
+      updateSlider();
+    }
+
+    function resetTimer() {
+      clearInterval(timer);
+      timer = setInterval(nextSlide, 4000);
+    }
+
+    // Initialize
+    updateSlider();
+  </script>
+</body>
+</html>
